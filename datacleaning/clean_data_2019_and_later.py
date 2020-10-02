@@ -44,6 +44,7 @@ def clean_data_from_pdf_2019_and_later(pdf_path, year, month):
 
         # map the name to a normalized one
         normalized_prison_name = STANDARDIZED_PRISON_NAMES[institution_name]
+        code = normalized_prison_name.split(' ')[0]
 
         # The "default" for SQ is male, since only 2019 and later reports have SQ female numbers
         if normalized_prison_name == PrisonNames.SQ:
@@ -52,6 +53,7 @@ def clean_data_from_pdf_2019_and_later(pdf_path, year, month):
         population_data.append({
             field_names.YEAR: year,
             field_names.MONTH: month,
+            field_names.CODE: code,
             field_names.INSTITUTION_NAME: normalized_prison_name,
             # in the newer PDFs, there's no split/distinction between "civil addict" and people
             # with felonies - so total pop == number of people with felonies

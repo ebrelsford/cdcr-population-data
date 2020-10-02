@@ -15,7 +15,7 @@ PRE_2019_MONTHLY_BASE_URL = (
 # May of 2019 looks like this (note the "06" in the URL, but the "05" in the final name of the PDF):
 # https://www.cdcr.ca.gov/research/wp-content/uploads/sites/174/2019/06/Tpop1d1905.pdf
 FROM_2019_ON_MONTHLY_BASE_URL = (
-    'https://www.cdcr.ca.gov/research/wp-content/uploads/sites/174/{four_digit_year}/06/Tpop1d{two_digit_year}{zero_padded_month}.pdf'
+    'https://www.cdcr.ca.gov/research/wp-content/uploads/sites/174/{four_digit_year}/{month_plus_one}/Tpop1d{two_digit_year}{zero_padded_month}.pdf'
 )
 
 # 1996 appears to be the first year that this particular format was used.
@@ -44,14 +44,14 @@ def download_monthly_report_pdf(url, pdf_save_path):
 
     response = requests.get(url, stream=True)
     if response.status_code != 200:
-        print 'Non-200 from {}, got a {}. Moving on to the next one...'.format(
+        print('Non-200 from {}, got a {}. Moving on to the next one...'.format(
             url, response.status_code
-        )
+        ))
         return
 
     with open(pdf_save_path, 'wb') as f:
         f.write(response.content)
-    print 'Downloaded {} to {}'.format(url, pdf_save_path)
+    print('Downloaded {} to {}'.format(url, pdf_save_path))
 
 def download_for_all_year_months():
     """
@@ -64,7 +64,7 @@ def download_for_all_year_months():
 
         # TODO - add a flag to re-download old PDFs too
         if os.path.isfile(pdf_path):
-            print 'Skipping {} because it already exists'.format(pdf_path)
+            print('Skipping {} because it already exists'.format(pdf_path))
             continue
 
         download_monthly_report_pdf(url, pdf_path)
@@ -77,20 +77,23 @@ def download_2019_and_on():
     """
     monthly_urls = []
 
-    for year in ['2019']:
+    for year in ['2019', '2020']:
         two_digit_year = year[2:]
         for month in TWO_DIGIT_MONTHS:
+            month_plus_one = int(month) + 1
             monthly_urls.append(FROM_2019_ON_MONTHLY_BASE_URL.format(
-                four_digit_year=year, two_digit_year=two_digit_year, zero_padded_month=month
+                four_digit_year=year,
+                month_plus_one=f'{month_plus_one:02}',
+                two_digit_year=two_digit_year,
+                zero_padded_month=month
             ))
 
     for url in monthly_urls:
         pdf_name = url.split('/')[-1]
         pdf_path = 'data/raw_monthly_pdfs/{}'.format(pdf_name)
 
-
         if os.path.isfile(pdf_path):
-            print 'Skipping {} because it already exists'.format(pdf_path)
+            print('Skipping {} because it already exists'.format(pdf_path))
             continue
 
         download_monthly_report_pdf(url, pdf_path)

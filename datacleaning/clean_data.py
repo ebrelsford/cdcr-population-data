@@ -29,8 +29,10 @@ def sanity_check_cleaned_data(cleaned_data):
             num_overcrowded_institutions += 1
             num_people_in_overcrowded += d['total_population']
 
-    print num_overcrowded_institutions, 'institutions out of', total_institutions
-    print num_people_in_overcrowded, 'people out of', total_people, num_people_in_overcrowded / float(total_people), '%'
+    print(num_overcrowded_institutions, 'institutions out of',
+            total_institutions)
+    print(num_people_in_overcrowded, 'people out of', total_people,
+            num_people_in_overcrowded / float(total_people), '%')
 
 def parse_fields_from_single_line(line, gender_suffix):
     """

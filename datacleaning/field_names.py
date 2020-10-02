@@ -2,6 +2,7 @@
 # to them more easily from multiple places.
 YEAR = 'year'
 MONTH = 'month'
+CODE = 'code'
 INSTITUTION_NAME = 'institution_name'
 NUM_PEOPLE_WITH_FELONIES = 'population_felons'
 NUM_CIVIL_ADDICT = 'civil_addict'

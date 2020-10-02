@@ -20,14 +20,6 @@ def write_csv(dataset, csv_path, column_names):
         for row in dataset:
             writer.writerow(row)
 
-def compare_year_month(row1, row2):
-    if int(row1['year']) > int(row2['year']):
-        return 1
-    elif int(row1['year']) == int(row2['year']) and int(row1['month']) > int(row2['month']):
-        return 1
-
-    return -1
-
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbose', action='store_true', help='display progress')
@@ -50,7 +42,8 @@ def main():
         full_path = pdfs_dir_to_process + pdf
 
         if cl_args.verbose:
-            print 'Processing {} with year {} and month {}'.format(full_path, year, month)
+            print('Processing {} with year {} and month {}'.format(full_path,
+                year, month))
 
         if full_path.endswith('.pdf'):
             if int(year) < 2019:
@@ -68,11 +61,12 @@ def main():
 
             combined_data.extend(cleaned_data)
 
-    combined_data.sort(cmp=compare_year_month)
+    combined_data.sort(key=lambda r: r['year'] + ' ' + r['month'])
     # sort them by year, month
     fields_in_order = [
         field_names.YEAR,
         field_names.MONTH,
+        field_names.CODE,
         field_names.INSTITUTION_NAME,
         field_names.NUM_PEOPLE_WITH_FELONIES,
         field_names.NUM_CIVIL_ADDICT,
@@ -83,7 +77,7 @@ def main():
         field_names.SOURCE_PDF
     ]
     write_csv(combined_data, cl_args.outfile, fields_in_order)
-    print 'Wrote output to {}'.format(cl_args.outfile)
+    print('Wrote output to {}'.format(cl_args.outfile))
 
 if __name__ == '__main__':
     main()
