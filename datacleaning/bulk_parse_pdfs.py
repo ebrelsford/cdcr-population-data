@@ -57,7 +57,7 @@ def main():
             for i in range(len(cleaned_data)):
                 cleaned_data[i][field_names.MONTH] = month
                 cleaned_data[i][field_names.YEAR] = year
-                cleaned_data[i][field_names.SOURCE_PDF] = pdf
+                # cleaned_data[i][field_names.SOURCE_PDF] = pdf
 
             combined_data.extend(cleaned_data)
 
@@ -68,13 +68,13 @@ def main():
         field_names.MONTH,
         field_names.CODE,
         field_names.INSTITUTION_NAME,
-        field_names.NUM_PEOPLE_WITH_FELONIES,
-        field_names.NUM_CIVIL_ADDICT,
+        # field_names.NUM_PEOPLE_WITH_FELONIES,
+        # field_names.NUM_CIVIL_ADDICT,
         field_names.TOTAL_POPULATION,
-        field_names.DESIGNED_CAP,
-        field_names.PCT_OCCUPIED,
-        field_names.STAFFED_CAP,
-        field_names.SOURCE_PDF
+        # field_names.DESIGNED_CAP,
+        # field_names.PCT_OCCUPIED,
+        # field_names.STAFFED_CAP,
+        # field_names.SOURCE_PDF
     ]
     write_csv(combined_data, cl_args.outfile, fields_in_order)
     print('Wrote output to {}'.format(cl_args.outfile))

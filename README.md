@@ -36,3 +36,20 @@ There are tests! Run them with `nose`:
 ```
 nosetests
 ```
+
+## Deploy
+
+This code is deployed to AWS using ECS.
+
+Log in to ECR, build the image, tag it, and push it:
+
+```
+aws ecr get-login-password --profile ucsf --region us-west-1 | docker login --username AWS --password-stdin 941805695350.dkr.ecr.us-west-1.amazonaws.com
+docker build -t cdcr-population-data .
+docker tag cdcr-population-data:latest 941805695350.dkr.ecr.us-west-1.amazonaws.com/cdcr-population-data:latest
+docker push 941805695350.dkr.ecr.us-west-1.amazonaws.com/cdcr-population-data:latest
+```
+
+(These are paraphrased from the ECR documentation.)
+
+Create a Fargate task and run it. In ECS this is running as a weekly scheduled task.

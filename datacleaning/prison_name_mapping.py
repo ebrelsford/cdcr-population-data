@@ -1,5 +1,6 @@
 class PrisonNames(object):
     ASP = 'ASP (AVENAL SP)'
+    CAC = 'CAC (California City Correctional Facility)'
     CAL = 'CAL (CALIPATRIA SP)'
     CCC = 'CCC (CA CORRECTIONAL CENTER)'
     CCI = 'CCI (CA CORRECTIONAL INSTITUTION)'
@@ -17,7 +18,7 @@ class PrisonNames(object):
     CVSP = 'CVSP (CHUCKAWALLA VALLEY SP)'
     DVI = 'DVI (DEUEL VOCATIONAL INSTITUTION)'
     FOL_FEMALE = 'FOL (FOLSOM SP) (FEMALE)'
-    FOL_MALE = 'FOL (FOLSOM SP) (MALE)'
+    FOL_MALE = 'FSP (FOLSOM SP) (MALE)'
     FRCC = 'FRCC (FRCCC BAKERSFIELD)'
     HDSP = 'HDSP (HIGH DESERT SP)'
     ISP = 'ISP (IRONWOOD SP)'
@@ -45,6 +46,8 @@ STANDARDIZED_PRISON_NAMES = {
     PrisonNames.ASP: PrisonNames.ASP,
     'Avenal State Prison (ASP)': PrisonNames.ASP,
 
+    PrisonNames.CAC: PrisonNames.CAC,
+    'California City Correctional Facility': PrisonNames.CAC,
 
     PrisonNames.CAL: PrisonNames.CAL,
     'CAL (CAL SP, CALIPATRIA)': PrisonNames.CAL,

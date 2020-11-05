@@ -1,6 +1,10 @@
+from bs4 import BeautifulSoup
+import datetime
 import os
+import re
 import requests
 import time
+import urllib
 
 PDF_PATH_FORMAT = 'TPOP1Ad{two_digit_year}{zero_padded_month}.pdf'
 
@@ -14,9 +18,7 @@ PRE_2019_MONTHLY_BASE_URL = (
 # The "06" in the middle of the URL is actually correct - it does not change with month. That is,
 # May of 2019 looks like this (note the "06" in the URL, but the "05" in the final name of the PDF):
 # https://www.cdcr.ca.gov/research/wp-content/uploads/sites/174/2019/06/Tpop1d1905.pdf
-FROM_2019_ON_MONTHLY_BASE_URL = (
-    'https://www.cdcr.ca.gov/research/wp-content/uploads/sites/174/{four_digit_year}/{month_plus_one}/Tpop1d{two_digit_year}{zero_padded_month}.pdf'
-)
+FROM_2019_ON_MONTHLY_BASE_URL = 'https://www.cdcr.ca.gov{report_path}'
 
 # 1996 appears to be the first year that this particular format was used.
 # Also, there are better ways to do this.
@@ -70,26 +72,14 @@ def download_for_all_year_months():
         download_monthly_report_pdf(url, pdf_path)
         time.sleep(2)
 
-def download_2019_and_on():
-    """
-    Starting in 2019, URL structure was a bit different. This is now the "current" way to download
-    reports.
-    """
-    monthly_urls = []
 
-    for year in ['2019', '2020']:
-        two_digit_year = year[2:]
-        for month in TWO_DIGIT_MONTHS:
-            month_plus_one = int(month) + 1
-            monthly_urls.append(FROM_2019_ON_MONTHLY_BASE_URL.format(
-                four_digit_year=year,
-                month_plus_one=f'{month_plus_one:02}',
-                two_digit_year=two_digit_year,
-                zero_padded_month=month
-            ))
+def download(report_links):
+    monthly_urls = [link['url'] for link in report_links]
 
     for url in monthly_urls:
         pdf_name = url.split('/')[-1]
+
+        # TODO do something with date...
         pdf_path = 'data/raw_monthly_pdfs/{}'.format(pdf_name)
 
         if os.path.isfile(pdf_path):
@@ -99,8 +89,41 @@ def download_2019_and_on():
         download_monthly_report_pdf(url, pdf_path)
         time.sleep(2)
 
+
+def get_report_links():
+    request = urllib.request.urlopen('https://www.cdcr.ca.gov/research/monthly-total-population-report-archive-2019/')
+    html_str = request.read()
+    page = BeautifulSoup(html_str, features='html.parser')
+
+    links = page.find_all('a')
+    pattern = re.compile('.*View\s+(.*)\s+Report.*', re.IGNORECASE)
+    report_links = []
+
+    for link in links:
+        match = pattern.match(link.text)
+        if not match: continue
+
+        date = match.groups()[0].strip()
+        month, year = date.split(' ')
+        if year <= '2019':
+            continue
+
+        url = link.attrs['href']
+        if not url.startswith('http'):
+            url = FROM_2019_ON_MONTHLY_BASE_URL.format(report_path=url)
+
+        report_links.append({
+            'url': url,
+            'month': month,
+            'year': year,
+        })
+
+    return report_links
+
+
 def main():
-    download_2019_and_on()
+    report_links = get_report_links()
+    download(report_links)
 
 if __name__ == '__main__':
     main()

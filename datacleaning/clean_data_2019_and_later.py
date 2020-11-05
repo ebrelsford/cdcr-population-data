@@ -21,6 +21,30 @@ def clean_data_from_pdf_2019_and_later(pdf_path, year, month):
         field_names.STAFFED_CAP
     ]
 
+    # Parsing the first page doesn't go as well, but we only want one piece of
+    # data from it.
+    first_page_parsed = tabula.read_pdf(pdf_path, pages=[1])
+    first_page_parsed.columns = [
+        'Population',
+        'Felon / Other',
+        'Month Change',
+        'Year Change',
+    ]
+
+    # Just get population for California City Correctional Facility
+    cccf_data = first_page_parsed[
+        first_page_parsed['Population'] == 'California City Correctional Facility'
+    ]
+    cccf_population = cccf_data['Felon / Other'].array[0].split(' ')[0]
+
+    tabula_parsed = tabula_parsed.append({
+        field_names.INSTITUTION_NAME: 'California City Correctional Facility',
+        field_names.TOTAL_POPULATION: cccf_population,
+        field_names.DESIGNED_CAP: '',
+        field_names.PCT_OCCUPIED: '',
+        field_names.STAFFED_CAP: ''
+    }, ignore_index=True)
+
     as_dicts = tabula_parsed.to_dict('records')
     # Male population counts show up first, followed by female. For prisons that have the same name
     # in the data, keep track of whether or not we're still processing male section
@@ -57,14 +81,14 @@ def clean_data_from_pdf_2019_and_later(pdf_path, year, month):
             field_names.INSTITUTION_NAME: normalized_prison_name,
             # in the newer PDFs, there's no split/distinction between "civil addict" and people
             # with felonies - so total pop == number of people with felonies
-            field_names.NUM_PEOPLE_WITH_FELONIES: make_numeric(d[field_names.TOTAL_POPULATION]),
-            field_names.NUM_CIVIL_ADDICT: 0,
+            # field_names.NUM_PEOPLE_WITH_FELONIES: make_numeric(d[field_names.TOTAL_POPULATION]),
+            # field_names.NUM_CIVIL_ADDICT: 0,
 
             field_names.TOTAL_POPULATION: make_numeric(d[field_names.TOTAL_POPULATION]),
-            field_names.DESIGNED_CAP: make_numeric(d[field_names.DESIGNED_CAP]),
-            field_names.PCT_OCCUPIED: make_numeric(d[field_names.PCT_OCCUPIED]),
-            field_names.STAFFED_CAP: make_numeric(d[field_names.STAFFED_CAP]),
-            field_names.SOURCE_PDF: pdf_path
+            # field_names.DESIGNED_CAP: make_numeric(d[field_names.DESIGNED_CAP]),
+            # field_names.PCT_OCCUPIED: make_numeric(d[field_names.PCT_OCCUPIED]),
+            # field_names.STAFFED_CAP: make_numeric(d[field_names.STAFFED_CAP]),
+            # field_names.SOURCE_PDF: pdf_path
         })
 
     return population_data

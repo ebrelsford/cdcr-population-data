@@ -27,6 +27,8 @@ def get_year_month_from_pdf_name(pdf_name):
 
 def make_numeric(s):
     without_commas = s.replace(',', '').strip()
+    if without_commas == '':
+        return None
     if '.' in without_commas:
         return float(without_commas)
     else:
